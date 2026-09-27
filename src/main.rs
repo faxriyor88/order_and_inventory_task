@@ -53,8 +53,8 @@ async fn main() {
         )),
         product_service: Arc::new(ProductService::new(ProductRepository::new(pool.clone()))),
         order_service: Arc::new(OrderService::new(
+            pool.clone(),
             OrderRepository::new(pool.clone()),
-            ProductRepository::new(pool.clone()),
             OrderItemRepository::new(pool.clone()),
         )),
     };

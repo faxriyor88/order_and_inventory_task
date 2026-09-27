@@ -10,8 +10,8 @@ use std::sync::Arc;
 
 pub fn order_routes() -> Router<AppState> {
     Router::new()
-        .route("/order", post(create))
-        .route("/order/{id}/items", post(add_item))
+        .route("/orders", post(create).get(list_orders))
+        .route("/orders/{id}/items", post(add_item).get(list_order_items))
 }
 
 async fn create(
@@ -31,4 +31,21 @@ async fn add_item(
     let order = order_service.add_item(id, payload).await?;
 
     Ok(Json(order))
+}
+
+async fn list_orders(
+    State(order_service): State<Arc<OrderService>>,
+) -> Result<Json<Vec<Order>>, AppError> {
+    let list = order_service.list().await?;
+
+    Ok(Json(list))
+}
+
+async fn list_order_items(
+    State(order_service): State<Arc<OrderService>>,
+    Path(id): Path<i64>,
+) -> Result<Json<Vec<OrderItem>>, AppError> {
+    let list = order_service.list_items(id).await?;
+
+    Ok(Json(list))
 }
